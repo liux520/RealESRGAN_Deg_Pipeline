@@ -56,6 +56,13 @@ gt, gt_usm, lq, kernel1, kernel2, sinc_kernel = deg_pipeline.forward_interface(
 ### Mode 3: Accessing the Dataset class via interface *forward_interface_contrast*.
 
 ```python
+from utils.utils import _get_paths_from_images
+from utils.utils import uint2tensor
+
+# print(os.path.abspath(os.path.join(__file__, os.path.pardir)))
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+deg_pipeline = Degradation(scale=2, gt_size=480, use_sharp_gt=True, device=device)
+
 """ Demo-3: Accessing the Dataset class via interface forward_interface_contrast,
             achieving the same degradation of two image patches. (For some contrast learning based methods). """
 
