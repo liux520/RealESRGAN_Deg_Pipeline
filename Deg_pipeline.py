@@ -169,7 +169,7 @@ class Degradation(nn.Module):
         return gt, gt_usm, lq, kernel1, kernel2, sinc_kernel
 
     @torch.no_grad()
-    def forward_interface_contrast(self, img_gt1, img_gt2, uint8=False):
+    def forward_interface_contrast(self, img_gt1, img_gt2, uint8=False, same_deg=False):
         """
         img_gt: read gt image, with Tensor [0., 1.] BCHW
         uint8: whether save
@@ -178,10 +178,15 @@ class Degradation(nn.Module):
         img_gt_copy2 = img_gt2.clone()
 
         # degradation_piepline
-        set_seed(666)
-        lq1, gt_usm1, kernel11, kernel21, sinc_kernel1 = self.forward_deg(img_gt1)
-        set_seed(666)
-        lq2, gt_usm2, kernel12, kernel22, sinc_kernel2 = self.forward_deg(img_gt2)
+        if same_deg:
+            randseed = random.randint(0, 100000000)
+            set_seed(randseed)
+            lq1, gt_usm1, kernel11, kernel21, sinc_kernel1 = self.forward_deg(img_gt1)
+            set_seed(randseed)
+            lq2, gt_usm2, kernel12, kernel22, sinc_kernel2 = self.forward_deg(img_gt2)
+        else:
+            lq1, gt_usm1, kernel11, kernel21, sinc_kernel1 = self.forward_deg(img_gt1)
+            lq2, gt_usm2, kernel12, kernel22, sinc_kernel2 = self.forward_deg(img_gt2)
 
         # clamp and round
         lq1 = torch.clamp((lq1 * 255.0).round(), 0, 255) / 255.
@@ -547,6 +552,7 @@ if __name__ == '__main__':
     gt1, gt_usm1, lq1, gt2, gt_usm2, lq2 = deg_pipeline.forward_interface_contrast(
         uint2tensor(cv2.imread(r'../../Datasets/SR/DIV2K/DIV2K_HR_train/0004.png')[:, :, ::-1], device),
         uint2tensor(cv2.imread(r'../../Datasets/SR/DIV2K/DIV2K_HR_train/0004.png')[:, :, ::-1], device),
+        same_deg=True
     )
     print((lq1 == lq2).all())
     # tensor(True, device='cuda:0')
