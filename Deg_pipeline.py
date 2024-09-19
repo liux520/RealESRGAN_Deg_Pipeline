@@ -95,9 +95,9 @@ class Degradation(nn.Module):
         gt_usm_copy = gt_usm.clone()
 
         # generate kernel
-        kernel1 = self.generate_first_kernel().to(self.device)
-        kernel2 = self.generate_second_kernel().to(self.device)
-        sinc_kernel = self.generate_sinc_kernel().to(self.device)
+        kernel1 = self.generate_first_kernel().unsqueeze(0).to(self.device)
+        kernel2 = self.generate_second_kernel().unsqueeze(0).to(self.device)
+        sinc_kernel = self.generate_sinc_kernel().unsqueeze(0).to(self.device)
 
         # first degradation
         blurred_1 = self.blur_1(gt_usm, kernel1)
