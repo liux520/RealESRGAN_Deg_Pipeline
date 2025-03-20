@@ -150,8 +150,6 @@ def generate_poisson_noise_pt(img, scale=1.0, gray_noise=0):
         cal_gray_noise = torch.sum(gray_noise) > 0
     if cal_gray_noise:
         img_gray = rgb_to_grayscale(img, num_output_channels=1)
-        # img_gray=img[:,0,:,:]   #size: BHW
-        img_gray = torch.unsqueeze(img_gray, 1)
         # round and clip image for counting vals correctly
         img_gray = torch.clamp((img_gray * 255.0).round(), 0, 255) / 255.
         # use for-loop to get the unique values for each sample
